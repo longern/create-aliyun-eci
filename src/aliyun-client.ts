@@ -9,7 +9,7 @@ export class AliyunClient {
     this.endpoint = endpoint;
   }
 
-  async request(action: string, params: any) {
+  async request(action: string, params?: Record<string, any>) {
     const { accessKeyId, accessKeySecret, endpoint } = this;
     const requestParams: Record<string, any> = {
       ...params,
@@ -51,6 +51,7 @@ export class AliyunClient {
       signature
     )}`;
     const response = await fetch(url);
+    if (!response.ok) return Promise.reject(response);
     return response.json();
   }
 }
