@@ -2,18 +2,21 @@ import {
   Box,
   Button,
   CircularProgress,
+  IconButton,
   Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
 import React from "react";
 import { Link } from "react-router-dom";
 
 import { AliyunClient } from "./aliyun-client";
 import { AccessKeyContext, RegionContext } from "./contexts";
+import { Refresh } from "@mui/icons-material";
 
 export default function ListEci() {
   const accessKey = React.useContext(AccessKeyContext);
@@ -43,13 +46,10 @@ export default function ListEci() {
         accessKey.accessKeySecret,
         `https://eci.${region}.aliyuncs.com`
       );
-      client
-        .request("DeleteContainerGroups", {
-          ContainerGroupId: containerGroupId,
-          RegionId: region,
-        })
-        .then((body) => setContainerGroups(body.ContainerGroups))
-        .finally(() => setLoading(false));
+      client.request("DeleteContainerGroup", {
+        ContainerGroupId: containerGroupId,
+        RegionId: region,
+      });
     },
     [accessKey, region]
   );
@@ -60,68 +60,73 @@ export default function ListEci() {
 
   return (
     <Stack spacing={1}>
+      <Typography variant="h1" my={2} fontSize="2rem">
+        Elastic Container Instance
+      </Typography>
       <Stack direction="row" spacing={1}>
         <Button variant="contained" component={Link} to="/create">
-          Create Container Group
+          Create
         </Button>
         <Box sx={{ flexGrow: 1 }} />
-        <Button variant="contained" onClick={fetchContainerGroups}>
-          Refresh
-        </Button>
+        <IconButton onClick={fetchContainerGroups}>
+          <Refresh />
+        </IconButton>
       </Stack>
-      {loading ? (
-        <Stack alignItems="center">
-          <CircularProgress></CircularProgress>
-        </Stack>
-      ) : (
-        <Table>
-          <TableHead>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Container Group Name</TableCell>
+            <TableCell>Container Group Id</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell
+              sx={{
+                position: "sticky",
+                right: 0,
+              }}
+            >
+              Actions
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {loading ? (
             <TableRow>
-              <TableCell>Container Group Name</TableCell>
-              <TableCell>Container Group Id</TableCell>
-              <TableCell
-                sx={{
-                  position: "sticky",
-                  right: 0,
-                }}
-              >
-                Actions
+              <TableCell colSpan={99} sx={{ textAlign: "center" }}>
+                <CircularProgress></CircularProgress>
               </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {containerGroups.length ? (
-              containerGroups.map((containerGroup) => (
-                <TableRow key={containerGroup.ContainerGroupId}>
-                  <TableCell>{containerGroup.ContainerGroupName}</TableCell>
-                  <TableCell>{containerGroup.ContainerGroupId}</TableCell>
-                  <TableCell>
-                    <Button
-                      onClick={() =>
-                        deleteContainerGroup(containerGroup.ContainerGroupId)
-                      }
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={3}
-                  sx={{
-                    textAlign: "center",
-                    color: "text.secondary",
-                  }}
-                >
-                  No container groups
+          ) : containerGroups.length ? (
+            containerGroups.map((containerGroup) => (
+              <TableRow key={containerGroup.ContainerGroupId}>
+                <TableCell>{containerGroup.ContainerGroupName}</TableCell>
+                <TableCell>{containerGroup.ContainerGroupId}</TableCell>
+                <TableCell>{containerGroup.Status}</TableCell>
+                <TableCell>
+                  <Button
+                    onClick={() =>
+                      deleteContainerGroup(containerGroup.ContainerGroupId)
+                    }
+                  >
+                    Delete
+                  </Button>
                 </TableCell>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      )}
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={99}
+                sx={{
+                  textAlign: "center",
+                  color: "text.secondary",
+                }}
+              >
+                No container groups
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </Stack>
   );
 }
