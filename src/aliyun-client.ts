@@ -1,14 +1,39 @@
 interface Params {
-  [key: string]: string | number | boolean | Params;
+  [key: string]: string | number | boolean | Params | Params[];
+}
+
+interface ParamsNullable {
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | ParamsNullable
+    | ParamsNullable[]
+    | null
+    | undefined;
+}
+
+function walk(
+  params: ParamsNullable | ParamsNullable[],
+  prefix: string = ""
+): [string, string][] {
+  if (Array.isArray(params)) {
+    return params.flatMap((value, index) => walk(value, prefix + index + "."));
+  } else if (typeof params === "object") {
+    return Object.entries(params)
+      .sort()
+      .flatMap(([key, value]) => {
+        if (value === null || value === undefined) return [];
+        if (typeof value === "object") return walk(value, prefix + key + ".");
+        return [[prefix + key, value.toString()]];
+      });
+  }
+  throw new Error("Invalid params");
 }
 
 function serialize(params: Params): string {
-  return Object.entries(params)
-    .sort()
+  return walk(params)
     .map(([key, value]) => {
-      if (typeof value === "object") {
-        value = JSON.stringify(value);
-      }
       return [encodeURIComponent(key), encodeURIComponent(value)].join("=");
     })
     .join("&");
