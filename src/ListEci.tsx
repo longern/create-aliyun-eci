@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@mui/material";
 import React from "react";
+import { Link } from "react-router-dom";
 
 import { AliyunClient } from "./aliyun-client";
 import { AccessKeyContext, RegionContext } from "./contexts";
@@ -43,7 +44,9 @@ export default function ListEci() {
   return (
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
-        <Button variant="contained">Create Container Group</Button>
+        <Button variant="contained" component={Link} to="/create">
+          Create Container Group
+        </Button>
         <Box sx={{ flexGrow: 1 }} />
         <Button variant="contained" onClick={fetchContainerGroups}>
           Refresh
