@@ -30,12 +30,29 @@ export default function ListEci() {
       `https://eci.${region}.aliyuncs.com`
     );
     client
-      .request("DescribeContainerGroups", {
-        RegionId: region,
-      })
+      .request("DescribeContainerGroups", { RegionId: region })
       .then((body) => setContainerGroups(body.ContainerGroups))
       .finally(() => setLoading(false));
   }, [accessKey, region]);
+
+  const deleteContainerGroup = React.useCallback(
+    (containerGroupId: string) => {
+      if (!accessKey.accessKeyId || !accessKey.accessKeySecret) return;
+      const client = new AliyunClient(
+        accessKey.accessKeyId,
+        accessKey.accessKeySecret,
+        `https://eci.${region}.aliyuncs.com`
+      );
+      client
+        .request("DeleteContainerGroups", {
+          ContainerGroupId: containerGroupId,
+          RegionId: region,
+        })
+        .then((body) => setContainerGroups(body.ContainerGroups))
+        .finally(() => setLoading(false));
+    },
+    [accessKey, region]
+  );
 
   React.useEffect(() => {
     fetchContainerGroups();
@@ -79,7 +96,13 @@ export default function ListEci() {
                   <TableCell>{containerGroup.ContainerGroupName}</TableCell>
                   <TableCell>{containerGroup.ContainerGroupId}</TableCell>
                   <TableCell>
-                    <Button>Stop</Button>
+                    <Button
+                      onClick={() =>
+                        deleteContainerGroup(containerGroup.ContainerGroupId)
+                      }
+                    >
+                      Delete
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))

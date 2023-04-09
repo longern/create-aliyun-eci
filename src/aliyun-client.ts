@@ -1,3 +1,19 @@
+interface Params {
+  [key: string]: string | number | boolean | Params;
+}
+
+function serialize(params: Params): string {
+  return Object.entries(params)
+    .sort()
+    .map(([key, value]) => {
+      if (typeof value === "object") {
+        value = JSON.stringify(value);
+      }
+      return [encodeURIComponent(key), encodeURIComponent(value)].join("=");
+    })
+    .join("&");
+}
+
 export class AliyunClient {
   accessKeyId: string;
   accessKeySecret: string;
@@ -9,9 +25,9 @@ export class AliyunClient {
     this.endpoint = endpoint;
   }
 
-  async request(action: string, params?: Record<string, any>) {
+  async request(action: string, params?: Params) {
     const { accessKeyId, accessKeySecret, endpoint } = this;
-    const requestParams: Record<string, any> = {
+    const requestParams: Params = {
       ...params,
       AccessKeyId: accessKeyId,
       Action: action,
@@ -22,13 +38,8 @@ export class AliyunClient {
       Timestamp: new Date().toISOString(),
       Version: "2018-08-08",
     };
-    const query = Object.entries(requestParams)
-      .sort()
-      .map(
-        ([key, value]) =>
-          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
-      )
-      .join("&");
+
+    const query = serialize(requestParams);
     const method = "GET";
     const stringToSign = `${method}&%2F&${encodeURIComponent(query)}`;
 
