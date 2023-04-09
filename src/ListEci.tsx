@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Stack,
   Table,
   TableBody,
@@ -16,10 +17,12 @@ import { AccessKeyContext, RegionContext } from "./contexts";
 export default function ListEci() {
   const accessKey = React.useContext(AccessKeyContext);
   const region = React.useContext(RegionContext);
+  const [loading, setLoading] = React.useState(true);
   const [containerGroups, setContainerGroups] = React.useState<any[]>([]);
 
   const fetchContainerGroups = React.useCallback(() => {
     if (!accessKey.accessKeyId || !accessKey.accessKeySecret) return;
+    setLoading(true);
     const client = new AliyunClient(
       accessKey.accessKeyId,
       accessKey.accessKeySecret,
@@ -29,7 +32,8 @@ export default function ListEci() {
       .request("DescribeContainerGroups", {
         RegionId: region,
       })
-      .then((body) => setContainerGroups(body.ContainerGroups));
+      .then((body) => setContainerGroups(body.ContainerGroups))
+      .finally(() => setLoading(false));
   }, [accessKey, region]);
 
   React.useEffect(() => {
@@ -45,47 +49,53 @@ export default function ListEci() {
           Refresh
         </Button>
       </Stack>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Container Group Name</TableCell>
-            <TableCell>Container Group Id</TableCell>
-            <TableCell
-              sx={{
-                position: "sticky",
-                right: 0,
-              }}
-            >
-              Actions
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {containerGroups.length ? (
-            containerGroups.map((containerGroup) => (
-              <TableRow key={containerGroup.ContainerGroupId}>
-                <TableCell>{containerGroup.ContainerGroupName}</TableCell>
-                <TableCell>{containerGroup.ContainerGroupId}</TableCell>
-                <TableCell>
-                  <Button>Stop</Button>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
+      {loading ? (
+        <Stack alignItems="center">
+          <CircularProgress></CircularProgress>
+        </Stack>
+      ) : (
+        <Table>
+          <TableHead>
             <TableRow>
+              <TableCell>Container Group Name</TableCell>
+              <TableCell>Container Group Id</TableCell>
               <TableCell
-                colSpan={3}
                 sx={{
-                  textAlign: "center",
-                  color: "text.secondary",
+                  position: "sticky",
+                  right: 0,
                 }}
               >
-                No container groups
+                Actions
               </TableCell>
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {containerGroups.length ? (
+              containerGroups.map((containerGroup) => (
+                <TableRow key={containerGroup.ContainerGroupId}>
+                  <TableCell>{containerGroup.ContainerGroupName}</TableCell>
+                  <TableCell>{containerGroup.ContainerGroupId}</TableCell>
+                  <TableCell>
+                    <Button>Stop</Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={3}
+                  sx={{
+                    textAlign: "center",
+                    color: "text.secondary",
+                  }}
+                >
+                  No container groups
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      )}
     </Stack>
   );
 }
