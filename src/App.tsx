@@ -1,42 +1,68 @@
-import { Container } from "@mui/material";
 import React from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
+import "./App.css";
 import ListEci from "./ListEci";
-import { AccessKeyContext, RegionContext } from "./contexts";
+import {
+  AccessKey,
+  AccessKeyContext,
+  Region,
+  RegionContext,
+  RegionsDispatchContext,
+} from "./contexts";
 import LoginForm from "./LoginForm";
+import CreateEci from "./CreateEci";
 
-type Region = {
-  RegionId: string;
-};
+const router = createBrowserRouter([
+  {
+    path: "/",
+    index: true,
+    element: <ListEci />,
+  },
+  {
+    path: "/login",
+    element: <LoginForm />,
+  },
+  {
+    path: "/create",
+    element: <CreateEci />,
+  },
+]);
 
-function App() {
-  const [accessKey, setAccessKey] = React.useState({
+function getAccessKeyFromStorage(): AccessKey {
+  const sessionValue = sessionStorage.getItem("caeAccessKey");
+  if (sessionValue) return JSON.parse(sessionValue);
+
+  const localValue = localStorage.getItem("caeAccessKey");
+  if (localValue) return JSON.parse(localValue);
+
+  return {
     accessKeyId: "",
     accessKeySecret: "",
-  });
+  };
+}
+
+function App() {
+  const accessKey = getAccessKeyFromStorage();
   const [regionId, setRegionId] = React.useState("cn-qingdao");
   const [regions, setRegions] = React.useState<Region[]>([]);
-  const [auth, setAuth] = React.useState(false);
+
+  React.useEffect(() => {
+    if (
+      (!accessKey.accessKeyId || !accessKey.accessKeySecret) &&
+      window.location.pathname !== "/login"
+    ) {
+      window.location.href = "/login";
+    }
+  });
 
   return (
     <div className="App">
       <AccessKeyContext.Provider value={accessKey}>
         <RegionContext.Provider value={regionId}>
-          <Container component="main">
-            {!auth ? (
-              <LoginForm
-                onLogin={(accessKeyId: string, accessKeySecret: string) => {
-                  setAuth(true);
-                  setAccessKey({ accessKeyId, accessKeySecret });
-                }}
-                onRegionsGot={(regions: Region[]) => {
-                  setRegions(regions);
-                }}
-              ></LoginForm>
-            ) : (
-              <ListEci></ListEci>
-            )}
-          </Container>
+          <RegionsDispatchContext.Provider value={setRegions}>
+            <RouterProvider router={router} />
+          </RegionsDispatchContext.Provider>
         </RegionContext.Provider>
       </AccessKeyContext.Provider>
     </div>
