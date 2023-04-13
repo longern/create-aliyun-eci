@@ -4,3 +4,12 @@ body,
 .App {
   height: 100%;
 }
+
+.App {
+  overflow: hidden;
+}
+
+main {
+  height: 100%;
+  overflow: auto;
+}

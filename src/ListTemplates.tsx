@@ -1,19 +1,18 @@
 import {
   Button,
+  Card,
+  CardActions,
+  CardContent,
   CircularProgress,
   Container,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Typography,
 } from "@mui/material";
 import React from "react";
 
 import { AliyunClient, ParamsNullable } from "./aliyun-client";
 import { AccessKeyContext, RegionContext } from "./contexts";
+import { useNavigate } from "react-router-dom";
 
 function walkCapitalize(params: ParamsNullable) {
   const result: ParamsNullable = {};
@@ -87,6 +86,7 @@ export default function ListTemplates() {
   const region = React.useContext(RegionContext);
   const [loading, setLoading] = React.useState(true);
   const [templates, setTemplates] = React.useState<any[]>([]);
+  const navigate = useNavigate();
 
   const fetchTemplates = React.useCallback(() => {
     if (!accessKey.accessKeyId || !accessKey.accessKeySecret) return;
@@ -108,73 +108,44 @@ export default function ListTemplates() {
 
   return (
     <Container component="main">
-      <Stack spacing={1}>
-        <Typography variant="h1" my={2} fontSize="2rem">
-          Launch Templates
-        </Typography>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Template Name</TableCell>
-              <TableCell>Template Id</TableCell>
-              <TableCell
-                sx={{
-                  position: "sticky",
-                  right: 0,
-                }}
-              >
-                Actions
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={99} sx={{ textAlign: "center" }}>
-                  <CircularProgress></CircularProgress>
-                </TableCell>
-              </TableRow>
-            ) : templates.length > 0 ? (
-              templates.map((template) => (
-                <TableRow key={template.LaunchTemplateId}>
-                  <TableCell>{template.LaunchTemplateName}</TableCell>
-                  <TableCell>{template.LaunchTemplateId}</TableCell>
-                  <TableCell
-                    sx={{
-                      position: "sticky",
-                      right: 0,
-                    }}
-                  >
-                    <Button
-                      onClick={() =>
-                        createFromTemplate(
-                          accessKey,
-                          region,
-                          template.LaunchTemplateId
-                        )
-                      }
-                    >
-                      Create From Template
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={99}
-                  sx={{
-                    textAlign: "center",
-                    color: "text.secondary",
+      <Typography variant="h1" my={2} fontSize="2rem">
+        Launch Templates
+      </Typography>
+      {loading ? (
+        <CircularProgress></CircularProgress>
+      ) : templates.length > 0 ? (
+        <Stack spacing={2} sx={{ py: 1 }}>
+          {" "}
+          {templates.map((template) => (
+            <Card key={template.LaunchTemplateId}>
+              <CardContent>
+                <Typography variant="h2" fontSize="1.5rem">
+                  {template.LaunchTemplateName}
+                </Typography>
+                <Typography color="text.secondary">
+                  {template.Description}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button
+                  onClick={async () => {
+                    await createFromTemplate(
+                      accessKey,
+                      region,
+                      template.LaunchTemplateId
+                    );
+                    navigate("/");
                   }}
                 >
-                  No launch templates
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </Stack>
+                  Create From Template
+                </Button>
+              </CardActions>
+            </Card>
+          ))}
+        </Stack>
+      ) : (
+        <>No launch templates</>
+      )}
     </Container>
   );
 }
