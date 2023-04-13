@@ -28,6 +28,11 @@ import { Refresh } from "@mui/icons-material";
 interface ContainerGroup {
   ContainerGroupId: string;
   ContainerGroupName: string;
+  Cpu: number;
+  CreationTime: string;
+  InternetIp: string;
+  IntranetIp: string;
+  Memory: number;
   Status:
     | "Pending"
     | "Running"
@@ -109,7 +114,7 @@ export default function ListEci() {
         </Typography>
         <Stack direction="row" spacing={1}>
           <Button variant="contained" component={Link} to="/templates">
-            Create
+            <span>Create</span>
           </Button>
           <Box sx={{ flexGrow: 1 }} />
           <IconButton onClick={fetchContainerGroups}>
@@ -117,7 +122,7 @@ export default function ListEci() {
           </IconButton>
         </Stack>
         {isMobile ? (
-          <Stack spacing={2}>
+          <Stack spacing={2} sx={{ py: 1 }}>
             {loading ? (
               Array.from({ length: 2 }).map((_, index) => (
                 <Skeleton key={index} variant="rounded" height={192} />
@@ -126,7 +131,13 @@ export default function ListEci() {
               containerGroups.map((containerGroup) => (
                 <Card key={containerGroup.ContainerGroupId}>
                   <CardContent>
-                    <Typography variant="h2" fontSize="1.5rem">
+                    <Typography
+                      gutterBottom
+                      variant="h2"
+                      fontSize="1.5rem"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                    >
                       {containerGroup.ContainerGroupName}
                     </Typography>
                     <Box color="text.secondary">
@@ -135,7 +146,9 @@ export default function ListEci() {
                     <Box>{containerGroup.Status}</Box>
                   </CardContent>
                   <CardActions>
+                    <Box sx={{ flexGrow: 1 }} />
                     <Button
+                      color="error"
                       onClick={() =>
                         deleteContainerGroup(containerGroup.ContainerGroupId)
                       }
@@ -153,13 +166,7 @@ export default function ListEci() {
                 </Card>
               ))
             ) : (
-              <Box
-                sx={{
-                  p: 2,
-                  textAlign: "center",
-                  color: "text.secondary",
-                }}
-              >
+              <Box textAlign="center" color="text.secondary">
                 No container groups
               </Box>
             )}

@@ -1,10 +1,12 @@
 import {
+  Box,
   Button,
   Card,
   CardActions,
   CardContent,
-  CircularProgress,
   Container,
+  IconButton,
+  Skeleton,
   Stack,
   Typography,
 } from "@mui/material";
@@ -13,6 +15,7 @@ import React from "react";
 import { AliyunClient, ParamsNullable } from "./aliyun-client";
 import { AccessKeyContext, RegionContext } from "./contexts";
 import { useNavigate } from "react-router-dom";
+import { ArrowBack, Refresh } from "@mui/icons-material";
 
 function walkCapitalize(params: ParamsNullable) {
   const result: ParamsNullable = {};
@@ -111,12 +114,22 @@ export default function ListTemplates() {
       <Typography variant="h1" my={2} fontSize="2rem">
         Launch Templates
       </Typography>
-      {loading ? (
-        <CircularProgress></CircularProgress>
-      ) : templates.length > 0 ? (
-        <Stack spacing={2} sx={{ py: 1 }}>
-          {" "}
-          {templates.map((template) => (
+      <Stack direction="row" spacing={2} sx={{ py: 1 }}>
+        <IconButton onClick={() => navigate("/")}>
+          <ArrowBack />
+        </IconButton>
+        <Box sx={{ flexGrow: 1 }} />
+        <IconButton onClick={fetchTemplates}>
+          <Refresh />
+        </IconButton>
+      </Stack>
+      <Stack spacing={2} sx={{ py: 1 }}>
+        {loading ? (
+          Array.from({ length: 2 }).map((_, index) => (
+            <Skeleton key={index} variant="rounded" height={192} />
+          ))
+        ) : templates.length > 0 ? (
+          templates.map((template) => (
             <Card key={template.LaunchTemplateId}>
               <CardContent>
                 <Typography variant="h2" fontSize="1.5rem">
@@ -141,11 +154,13 @@ export default function ListTemplates() {
                 </Button>
               </CardActions>
             </Card>
-          ))}
-        </Stack>
-      ) : (
-        <>No launch templates</>
-      )}
+          ))
+        ) : (
+          <Box textAlign="center" color="text.secondary">
+            No launch templates
+          </Box>
+        )}
+      </Stack>
     </Container>
   );
 }
