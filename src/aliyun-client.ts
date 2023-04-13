@@ -60,6 +60,7 @@ export class AliyunClient {
   async request(action: string, params?: ParamsNullable) {
     const { accessKeyId, accessKeySecret, endpoint } = this;
     const requestParams: ParamsNullable = {
+      Version: "2018-08-08",
       ...params,
       AccessKeyId: accessKeyId,
       Action: action,
@@ -68,7 +69,6 @@ export class AliyunClient {
       SignatureNonce: Math.random().toString(36).substring(2),
       SignatureVersion: "1.0",
       Timestamp: new Date().toISOString(),
-      Version: "2018-08-08",
     };
 
     const query = serialize(requestParams);
