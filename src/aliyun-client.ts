@@ -1,24 +1,24 @@
-interface Params {
-  [key: string]: string | number | boolean | Params | Params[];
-}
+type BasicType = string | number | boolean;
 
-interface ParamsNullable {
+export interface ParamsNullable {
   [key: string]:
-    | string
-    | number
-    | boolean
+    | BasicType
     | ParamsNullable
-    | ParamsNullable[]
+    | (ParamsNullable | BasicType)[]
     | null
     | undefined;
 }
 
 function walk(
-  params: ParamsNullable | ParamsNullable[],
+  params: ParamsNullable | (ParamsNullable | BasicType)[],
   prefix: string = ""
 ): [string, string][] {
   if (Array.isArray(params)) {
-    return params.flatMap((value, index) => walk(value, prefix + index + "."));
+    return params.flatMap((value, index) => {
+      if (typeof value === "object")
+        return walk(value, prefix + (index + 1) + ".");
+      return [[prefix + (index + 1), value.toString()]];
+    });
   } else if (typeof params === "object") {
     return Object.entries(params)
       .sort()
@@ -31,10 +31,17 @@ function walk(
   throw new Error("Invalid params");
 }
 
-function serialize(params: Params): string {
+function encodeRFC3986(str: string) {
+  return encodeURIComponent(str).replace(
+    /[!'()*]/g,
+    (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`
+  );
+}
+
+function serialize(params: ParamsNullable): string {
   return walk(params)
     .map(([key, value]) => {
-      return [encodeURIComponent(key), encodeURIComponent(value)].join("=");
+      return [encodeRFC3986(key), encodeRFC3986(value)].join("=");
     })
     .join("&");
 }
@@ -50,9 +57,9 @@ export class AliyunClient {
     this.endpoint = endpoint;
   }
 
-  async request(action: string, params?: Params) {
+  async request(action: string, params?: ParamsNullable) {
     const { accessKeyId, accessKeySecret, endpoint } = this;
-    const requestParams: Params = {
+    const requestParams: ParamsNullable = {
       ...params,
       AccessKeyId: accessKeyId,
       Action: action,
@@ -66,7 +73,7 @@ export class AliyunClient {
 
     const query = serialize(requestParams);
     const method = "GET";
-    const stringToSign = `${method}&%2F&${encodeURIComponent(query)}`;
+    const stringToSign = `${method}&%2F&${encodeRFC3986(query)}`;
 
     const textEncoder = new TextEncoder();
     const key = await crypto.subtle.importKey(
@@ -83,9 +90,7 @@ export class AliyunClient {
     );
     const signature = btoa(String.fromCharCode(...new Uint8Array(signBuffer)));
 
-    const url = `${endpoint}?${query}&Signature=${encodeURIComponent(
-      signature
-    )}`;
+    const url = `${endpoint}?${query}&Signature=${encodeRFC3986(signature)}`;
     const response = await fetch(url);
     if (!response.ok) return Promise.reject(response);
     return response.json();

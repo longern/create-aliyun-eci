@@ -66,7 +66,7 @@ export default function ListEci() {
           Elastic Container Instance
         </Typography>
         <Stack direction="row" spacing={1}>
-          <Button variant="contained" component={Link} to="/create">
+          <Button variant="contained" component={Link} to="/templates">
             Create
           </Button>
           <Box sx={{ flexGrow: 1 }} />
