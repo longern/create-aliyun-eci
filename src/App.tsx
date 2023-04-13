@@ -1,8 +1,7 @@
 import React from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import "./App.css";
-import ListEci from "./ListEci";
 import {
   AccessKey,
   AccessKeyContext,
@@ -10,24 +9,6 @@ import {
   RegionContext,
   RegionsDispatchContext,
 } from "./contexts";
-import LoginForm from "./LoginForm";
-import CreateEci from "./CreateEci";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    index: true,
-    element: <ListEci />,
-  },
-  {
-    path: "/login",
-    element: <LoginForm />,
-  },
-  {
-    path: "/create",
-    element: <CreateEci />,
-  },
-]);
 
 function getAccessKeyFromStorage(): AccessKey {
   const sessionValue = sessionStorage.getItem("caeAccessKey");
@@ -46,13 +27,15 @@ function App() {
   const accessKey = getAccessKeyFromStorage();
   const [regionId, setRegionId] = React.useState("cn-qingdao");
   const [regions, setRegions] = React.useState<Region[]>([]);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     if (
       (!accessKey.accessKeyId || !accessKey.accessKeySecret) &&
-      window.location.pathname !== "/login"
+      location.pathname !== "/login"
     ) {
-      window.location.href = "/login";
+      navigate("/login");
     }
   });
 
@@ -61,7 +44,7 @@ function App() {
       <AccessKeyContext.Provider value={accessKey}>
         <RegionContext.Provider value={regionId}>
           <RegionsDispatchContext.Provider value={setRegions}>
-            <RouterProvider router={router} />
+            <Outlet />
           </RegionsDispatchContext.Provider>
         </RegionContext.Provider>
       </AccessKeyContext.Provider>
