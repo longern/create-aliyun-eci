@@ -16,6 +16,7 @@ import { AliyunClient, ParamsNullable } from "./aliyun-client";
 import { AccessKeyContext, RegionContext } from "./contexts";
 import { useNavigate } from "react-router-dom";
 import { ArrowBack, Refresh } from "@mui/icons-material";
+import ConfirmDialog from "./ConfirmDialog";
 
 function walkCapitalize(params: ParamsNullable) {
   const result: ParamsNullable = {};
@@ -90,6 +91,9 @@ export default function ListTemplates() {
   const [loading, setLoading] = React.useState(true);
   const [templates, setTemplates] = React.useState<any[]>([]);
   const navigate = useNavigate();
+  const confirmDialogRef = React.useRef<{
+    show(message?: string): Promise<boolean>;
+  }>(null);
 
   const fetchTemplates = React.useCallback(() => {
     if (!accessKey.accessKeyId || !accessKey.accessKeySecret) return;
@@ -140,8 +144,13 @@ export default function ListTemplates() {
                 </Typography>
               </CardContent>
               <CardActions>
+                <ConfirmDialog ref={confirmDialogRef} />
                 <Button
                   onClick={async () => {
+                    const ok = await confirmDialogRef.current!.show(
+                      `Create container group from template ${template.LaunchTemplateName}?`
+                    );
+                    if (!ok) return;
                     await createFromTemplate(
                       accessKey,
                       region,

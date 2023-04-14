@@ -6,9 +6,6 @@ import {
   CardContent,
   CircularProgress,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
   IconButton,
   Skeleton,
   Stack,
@@ -27,6 +24,7 @@ import { Link } from "react-router-dom";
 import { AliyunClient } from "./aliyun-client";
 import { AccessKeyContext, RegionContext } from "./contexts";
 import { Refresh } from "@mui/icons-material";
+import ConfirmDialog from "./ConfirmDialog";
 
 interface ContainerGroup {
   ContainerGroupId: string;
@@ -48,57 +46,6 @@ interface ContainerGroup {
     | "Terminating"
     | "Expired";
 }
-
-const ConfirmDialog = React.forwardRef(function (
-  _props: {},
-  ref: React.Ref<{ show: (message?: string) => Promise<boolean> }>
-) {
-  const [open, setOpen] = React.useState(false);
-  const [message, setMessage] = React.useState("");
-  const [onConfirm, setOnConfirm] = React.useState<(ok: boolean) => void>(
-    () => () => {}
-  );
-
-  React.useImperativeHandle(
-    ref,
-    () => ({
-      show: async (message?: string) => {
-        setMessage(message || "Are you sure?");
-        setOpen(true);
-        return new Promise<boolean>(setOnConfirm);
-      },
-    }),
-    []
-  );
-
-  return (
-    <Dialog open={open}>
-      <DialogContent>
-        <Typography>{message}</Typography>
-      </DialogContent>
-      <DialogActions>
-        <Button
-          onClick={() => {
-            onConfirm(true);
-            setOpen(false);
-          }}
-          color="error"
-        >
-          Confirm
-        </Button>
-        <Button
-          color="info"
-          onClick={() => {
-            onConfirm(false);
-            setOpen(false);
-          }}
-        >
-          Cancel
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-});
 
 export default function ListEci() {
   const accessKey = React.useContext(AccessKeyContext);

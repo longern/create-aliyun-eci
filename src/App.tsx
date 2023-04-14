@@ -10,7 +10,7 @@ import {
   RegionsDispatchContext,
 } from "./contexts";
 import { AliyunClient } from "./aliyun-client";
-import { AppBar, Box, IconButton, Select, Toolbar } from "@mui/material";
+import { AppBar, Box, IconButton, Toolbar } from "@mui/material";
 import { Menu } from "@mui/icons-material";
 
 function getAccessKeyFromStorage(): AccessKey {
