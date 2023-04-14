@@ -10,7 +10,17 @@ import {
   RegionsDispatchContext,
 } from "./contexts";
 import { AliyunClient } from "./aliyun-client";
-import { AppBar, Box, IconButton, Toolbar } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Divider,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  Toolbar,
+} from "@mui/material";
 import { Menu } from "@mui/icons-material";
 
 function getAccessKeyFromStorage(): AccessKey {
@@ -26,7 +36,13 @@ function getAccessKeyFromStorage(): AccessKey {
   };
 }
 
+function deleteAccessKeyFromStorage() {
+  sessionStorage.removeItem("caeAccessKey");
+  localStorage.removeItem("caeAccessKey");
+}
+
 function App() {
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
   const accessKey = React.useMemo(getAccessKeyFromStorage, []);
   const [regionId, setRegionId] = React.useState("cn-qingdao");
   const [regions, setRegions] = React.useState<Region[]>([]);
@@ -59,6 +75,34 @@ function App() {
       });
   }, [accessKey]);
 
+  function DrawerList() {
+    return (
+      <List>
+        <ListItem>
+          <ListItemButton component={Link} to="/">
+            Container Groups
+          </ListItemButton>
+        </ListItem>
+        <ListItem>
+          <ListItemButton component={Link} to="/templates">
+            Launch Templates
+          </ListItemButton>
+        </ListItem>
+        <Divider />
+        <ListItem>
+          <ListItemButton
+            onClick={() => {
+              deleteAccessKeyFromStorage();
+              navigate("/login");
+            }}
+          >
+            Logout
+          </ListItemButton>
+        </ListItem>
+      </List>
+    );
+  }
+
   return (
     <div className="App">
       <AccessKeyContext.Provider value={accessKey}>
@@ -70,7 +114,12 @@ function App() {
                 disableGutters
                 sx={{ alignItems: "center" }}
               >
-                <IconButton size="large" color="inherit" aria-label="menu">
+                <IconButton
+                  size="large"
+                  color="inherit"
+                  aria-label="menu"
+                  onClick={() => setDrawerOpen(true)}
+                >
                   <Menu />
                 </IconButton>
                 <IconButton component={Link} to="/">
@@ -80,6 +129,24 @@ function App() {
                 <Box sx={{ px: 1 }}>{user?.DisplayName}</Box>
               </Toolbar>
             </AppBar>
+            <Drawer
+              variant="temporary"
+              anchor="left"
+              open={drawerOpen}
+              onClose={() => setDrawerOpen(false)}
+              ModalProps={{
+                keepMounted: true, // Better open performance on mobile.
+              }}
+            >
+              <Box
+                sx={{ width: 250 }}
+                role="presentation"
+                onClick={() => setDrawerOpen(false)}
+                onKeyDown={() => setDrawerOpen(false)}
+              >
+                <DrawerList />
+              </Box>
+            </Drawer>
             <Outlet />
           </RegionsDispatchContext.Provider>
         </RegionContext.Provider>
