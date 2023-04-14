@@ -6,6 +6,9 @@ import {
   CardContent,
   CircularProgress,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
   IconButton,
   Skeleton,
   Stack,
@@ -46,6 +49,57 @@ interface ContainerGroup {
     | "Expired";
 }
 
+const ConfirmDialog = React.forwardRef(function (
+  _props: {},
+  ref: React.Ref<{ show: (message?: string) => Promise<boolean> }>
+) {
+  const [open, setOpen] = React.useState(false);
+  const [message, setMessage] = React.useState("");
+  const [onConfirm, setOnConfirm] = React.useState<(ok: boolean) => void>(
+    () => () => {}
+  );
+
+  React.useImperativeHandle(
+    ref,
+    () => ({
+      show: async (message?: string) => {
+        setMessage(message || "Are you sure?");
+        setOpen(true);
+        return new Promise<boolean>(setOnConfirm);
+      },
+    }),
+    []
+  );
+
+  return (
+    <Dialog open={open}>
+      <DialogContent>
+        <Typography>{message}</Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          onClick={() => {
+            onConfirm(true);
+            setOpen(false);
+          }}
+          color="error"
+        >
+          Confirm
+        </Button>
+        <Button
+          color="info"
+          onClick={() => {
+            onConfirm(false);
+            setOpen(false);
+          }}
+        >
+          Cancel
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+});
+
 export default function ListEci() {
   const accessKey = React.useContext(AccessKeyContext);
   const region = React.useContext(RegionContext);
@@ -55,6 +109,9 @@ export default function ListEci() {
   );
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const confirmDialogRef = React.useRef<{
+    show: (message?: string) => Promise<boolean>;
+  }>(null);
 
   const fetchContainerGroups = React.useCallback(() => {
     if (!accessKey.accessKeyId || !accessKey.accessKeySecret) return;
@@ -147,11 +204,17 @@ export default function ListEci() {
                   </CardContent>
                   <CardActions>
                     <Box sx={{ flexGrow: 1 }} />
+                    <ConfirmDialog ref={confirmDialogRef} />
                     <Button
                       color="error"
-                      onClick={() =>
-                        deleteContainerGroup(containerGroup.ContainerGroupId)
-                      }
+                      onClick={async () => {
+                        const ok = await confirmDialogRef.current!.show(
+                          `Delete container group ${containerGroup.ContainerGroupName}?`
+                        );
+                        if (ok) {
+                          deleteContainerGroup(containerGroup.ContainerGroupId);
+                        }
+                      }}
                     >
                       Delete
                     </Button>
