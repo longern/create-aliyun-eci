@@ -10,7 +10,7 @@ import {
   RegionsDispatchContext,
 } from "./contexts";
 import { AliyunClient } from "./aliyun-client";
-import { AppBar, Box, IconButton, Toolbar } from "@mui/material";
+import { AppBar, Box, IconButton, Select, Toolbar } from "@mui/material";
 import { Menu } from "@mui/icons-material";
 
 function getAccessKeyFromStorage(): AccessKey {
@@ -64,7 +64,7 @@ function App() {
       <AccessKeyContext.Provider value={accessKey}>
         <RegionContext.Provider value={regionId}>
           <RegionsDispatchContext.Provider value={setRegions}>
-            <AppBar position="static">
+            <AppBar position="static" color="transparent">
               <Toolbar
                 variant="dense"
                 disableGutters

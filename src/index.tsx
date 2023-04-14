@@ -9,7 +9,15 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
-const theme = createTheme();
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#F38020",
+      contrastText: "#fff",
+    },
+  },
+});
+
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>

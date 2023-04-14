@@ -115,11 +115,11 @@ export default function ListTemplates() {
         Launch Templates
       </Typography>
       <Stack direction="row" spacing={2} sx={{ py: 1 }}>
-        <IconButton onClick={() => navigate("/")}>
+        <IconButton onClick={() => navigate("/")} aria-label="back">
           <ArrowBack />
         </IconButton>
         <Box sx={{ flexGrow: 1 }} />
-        <IconButton onClick={fetchTemplates}>
+        <IconButton onClick={fetchTemplates} aria-label="refresh">
           <Refresh />
         </IconButton>
       </Stack>

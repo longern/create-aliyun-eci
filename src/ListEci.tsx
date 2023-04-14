@@ -174,7 +174,7 @@ export default function ListEci() {
             <span>Create</span>
           </Button>
           <Box sx={{ flexGrow: 1 }} />
-          <IconButton onClick={fetchContainerGroups}>
+          <IconButton onClick={fetchContainerGroups} aria-label="refresh">
             <Refresh />
           </IconButton>
         </Stack>
