@@ -6,6 +6,7 @@ import {
   Button,
 } from "@mui/material";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const ConfirmDialog = React.forwardRef(function (
   _props: {},
@@ -14,6 +15,7 @@ const ConfirmDialog = React.forwardRef(function (
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState("");
   const onConfirm = React.useRef<(value: boolean) => void>();
+  const { t } = useTranslation();
 
   React.useImperativeHandle(
     ref,
@@ -30,7 +32,7 @@ const ConfirmDialog = React.forwardRef(function (
   );
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onClose={() => setOpen(false)}>
       <DialogContent>
         <Typography>{message}</Typography>
       </DialogContent>
@@ -42,7 +44,7 @@ const ConfirmDialog = React.forwardRef(function (
           }}
           color="error"
         >
-          Confirm
+          {t("Confirm")}
         </Button>
         <Button
           color="info"
@@ -51,7 +53,7 @@ const ConfirmDialog = React.forwardRef(function (
             setOpen(false);
           }}
         >
-          Cancel
+          {t("Cancel")}
         </Button>
       </DialogActions>
     </Dialog>

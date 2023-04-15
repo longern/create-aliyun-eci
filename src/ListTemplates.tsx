@@ -17,6 +17,7 @@ import { AccessKeyContext, RegionContext } from "./contexts";
 import { useNavigate } from "react-router-dom";
 import { ArrowBack, Refresh } from "@mui/icons-material";
 import ConfirmDialog from "./ConfirmDialog";
+import { withTranslation } from "react-i18next";
 
 function walkCapitalize(params: ParamsNullable) {
   const result: ParamsNullable = {};
@@ -85,7 +86,7 @@ async function createFromTemplate(
   return containerGroupId;
 }
 
-export default function ListTemplates() {
+function ListTemplates({ t }: { t: (key: string) => string }) {
   const accessKey = React.useContext(AccessKeyContext);
   const region = React.useContext(RegionContext);
   const [loading, setLoading] = React.useState(true);
@@ -116,14 +117,14 @@ export default function ListTemplates() {
   return (
     <Container component="main">
       <Typography variant="h1" my={2} fontSize="2rem">
-        Launch Templates
+        {t("Launch Templates")}
       </Typography>
       <Stack direction="row" spacing={2} sx={{ py: 1 }}>
-        <IconButton onClick={() => navigate("/")} aria-label="back">
+        <IconButton onClick={() => navigate("/")} title={t("Back")}>
           <ArrowBack />
         </IconButton>
         <Box sx={{ flexGrow: 1 }} />
-        <IconButton onClick={fetchTemplates} aria-label="refresh">
+        <IconButton onClick={fetchTemplates} title={t("Refresh")}>
           <Refresh />
         </IconButton>
       </Stack>
@@ -159,7 +160,7 @@ export default function ListTemplates() {
                     navigate("/");
                   }}
                 >
-                  Create From Template
+                  {t("Create from Template")}
                 </Button>
               </CardActions>
             </Card>
@@ -173,3 +174,5 @@ export default function ListTemplates() {
     </Container>
   );
 }
+
+export default withTranslation()(ListTemplates);

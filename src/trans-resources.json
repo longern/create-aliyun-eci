@@ -1,0 +1,18 @@
+{
+  "zh-CN": {
+    "translation": {
+      "Back": "返回",
+      "Cancel": "取消",
+      "Confirm": "确认",
+      "Container Groups": "容器组",
+      "Create": "创建",
+      "Create from Template": "从模板创建",
+      "Delete": "删除",
+      "Elastic Container Instance": "弹性容器实例",
+      "Launch Templates": "启动模板",
+      "Logout": "退出账号",
+      "Refresh": "刷新",
+      "Restart": "重启"
+    }
+  }
+}

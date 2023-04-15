@@ -22,6 +22,7 @@ import {
   Toolbar,
 } from "@mui/material";
 import { Menu } from "@mui/icons-material";
+import { withTranslation } from "react-i18next";
 
 function getAccessKeyFromStorage(): AccessKey {
   const sessionValue = sessionStorage.getItem("caeAccessKey");
@@ -75,17 +76,21 @@ function App() {
       });
   }, [accessKey]);
 
-  function DrawerList() {
+  const DrawerList = withTranslation()(function ({
+    t,
+  }: {
+    t: (key: string) => string;
+  }) {
     return (
       <List>
         <ListItem>
           <ListItemButton component={Link} to="/">
-            Container Groups
+            {t("Container Groups")}
           </ListItemButton>
         </ListItem>
         <ListItem>
           <ListItemButton component={Link} to="/templates">
-            Launch Templates
+            {t("Launch Templates")}
           </ListItemButton>
         </ListItem>
         <Divider />
@@ -96,12 +101,12 @@ function App() {
               navigate("/login");
             }}
           >
-            Logout
+            {t("Logout")}
           </ListItemButton>
         </ListItem>
       </List>
     );
-  }
+  });
 
   return (
     <div className="App">

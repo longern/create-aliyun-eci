@@ -25,6 +25,7 @@ import { AliyunClient } from "./aliyun-client";
 import { AccessKeyContext, RegionContext } from "./contexts";
 import { Add, Refresh } from "@mui/icons-material";
 import ConfirmDialog from "./ConfirmDialog";
+import { withTranslation } from "react-i18next";
 
 interface ContainerGroup {
   ContainerGroupId: string;
@@ -47,7 +48,7 @@ interface ContainerGroup {
     | "Expired";
 }
 
-export default function ListEci() {
+function ListEci({ t }: { t: (key: string) => string }) {
   const accessKey = React.useContext(AccessKeyContext);
   const region = React.useContext(RegionContext);
   const [loading, setLoading] = React.useState(true);
@@ -114,14 +115,14 @@ export default function ListEci() {
     <Container component="main">
       <Stack spacing={1}>
         <Typography variant="h1" my={2} fontSize="2rem">
-          Elastic Container Instance
+          {t("Elastic Container Instance")}
         </Typography>
         <Stack direction="row" spacing={1}>
-          <IconButton component={Link} to="/templates" title="Create">
+          <IconButton component={Link} to="/templates" title={t("Create")}>
             <Add />
           </IconButton>
           <Box sx={{ flexGrow: 1 }} />
-          <IconButton onClick={fetchContainerGroups} title="Refresh">
+          <IconButton onClick={fetchContainerGroups} title={t("Refresh")}>
             <Refresh />
           </IconButton>
         </Stack>
@@ -163,21 +164,21 @@ export default function ListEci() {
                         }
                       }}
                     >
-                      Delete
+                      {t("Delete")}
                     </Button>
                     <Button
                       onClick={() =>
                         restartContainerGroup(containerGroup.ContainerGroupId)
                       }
                     >
-                      Restart
+                      {t("Restart")}
                     </Button>
                   </CardActions>
                 </Card>
               ))
             ) : (
               <Box textAlign="center" color="text.secondary">
-                No container groups
+                {t("No container groups")}
               </Box>
             )}
           </Stack>
@@ -242,3 +243,5 @@ export default function ListEci() {
     </Container>
   );
 }
+
+export default withTranslation()(ListEci);
