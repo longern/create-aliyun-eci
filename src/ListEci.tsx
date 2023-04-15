@@ -23,7 +23,7 @@ import { Link } from "react-router-dom";
 
 import { AliyunClient } from "./aliyun-client";
 import { AccessKeyContext, RegionContext } from "./contexts";
-import { Refresh } from "@mui/icons-material";
+import { Add, Refresh } from "@mui/icons-material";
 import ConfirmDialog from "./ConfirmDialog";
 
 interface ContainerGroup {
@@ -117,11 +117,11 @@ export default function ListEci() {
           Elastic Container Instance
         </Typography>
         <Stack direction="row" spacing={1}>
-          <Button variant="contained" component={Link} to="/templates">
-            <span>Create</span>
-          </Button>
+          <IconButton component={Link} to="/templates" title="Create">
+            <Add />
+          </IconButton>
           <Box sx={{ flexGrow: 1 }} />
-          <IconButton onClick={fetchContainerGroups} aria-label="refresh">
+          <IconButton onClick={fetchContainerGroups} title="Refresh">
             <Refresh />
           </IconButton>
         </Stack>
