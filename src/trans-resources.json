@@ -11,7 +11,9 @@
       "Elastic Container Instance": "弹性容器实例",
       "Launch Templates": "启动模板",
       "Logout": "退出账号",
+      "No data": "无数据",
       "Refresh": "刷新",
+      "Regions": "地域",
       "Restart": "重启"
     }
   }

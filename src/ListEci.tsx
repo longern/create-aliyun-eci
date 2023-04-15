@@ -67,10 +67,10 @@ function ListEci({ t }: { t: (key: string) => string }) {
     const client = new AliyunClient(
       accessKey.accessKeyId,
       accessKey.accessKeySecret,
-      `https://eci.${region}.aliyuncs.com`
+      "https://" + region!.RegionEndpoint
     );
     client
-      .request("DescribeContainerGroups", { RegionId: region })
+      .request("DescribeContainerGroups", { RegionId: region!.RegionId })
       .then((body) => setContainerGroups(body.ContainerGroups))
       .finally(() => setLoading(false));
   }, [accessKey, region]);
@@ -81,11 +81,11 @@ function ListEci({ t }: { t: (key: string) => string }) {
       const client = new AliyunClient(
         accessKey.accessKeyId,
         accessKey.accessKeySecret,
-        `https://eci.${region}.aliyuncs.com`
+        "https://" + region!.RegionEndpoint
       );
       client.request("DeleteContainerGroup", {
         ContainerGroupId: containerGroupId,
-        RegionId: region,
+        RegionId: region!.RegionId,
       });
     },
     [accessKey, region]
@@ -97,11 +97,11 @@ function ListEci({ t }: { t: (key: string) => string }) {
       const client = new AliyunClient(
         accessKey.accessKeyId,
         accessKey.accessKeySecret,
-        `https://eci.${region}.aliyuncs.com`
+        "https://" + region!.RegionEndpoint
       );
       client.request("RestartContainerGroup", {
         ContainerGroupId: containerGroupId,
-        RegionId: region,
+        RegionId: region!.RegionId,
       });
     },
     [accessKey, region]
@@ -178,7 +178,7 @@ function ListEci({ t }: { t: (key: string) => string }) {
               ))
             ) : (
               <Box textAlign="center" color="text.secondary">
-                {t("No container groups")}
+                {t("No data")}
               </Box>
             )}
           </Stack>

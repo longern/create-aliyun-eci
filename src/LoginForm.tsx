@@ -10,7 +10,7 @@ import React from "react";
 import { useNavigate } from "react-router";
 
 import { AliyunClient } from "./aliyun-client";
-import { AccessKey, RegionsDispatchContext } from "./contexts";
+import { AccessKey } from "./contexts";
 
 function saveAccessKey(
   accessKey: AccessKey,
@@ -20,7 +20,6 @@ function saveAccessKey(
 }
 
 function LoginForm() {
-  const setRegions = React.useContext(RegionsDispatchContext);
   const [accessKeyId, setAccessKeyId] = React.useState("");
   const [accessKeySecret, setAccessKeySecret] = React.useState("");
   const [remember, setRemember] = React.useState(false);
@@ -37,7 +36,6 @@ function LoginForm() {
         { accessKeyId, accessKeySecret },
         remember ? localStorage : sessionStorage
       );
-      setRegions?.(body.Regions);
       navigate("/");
     });
     event.preventDefault();

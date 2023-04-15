@@ -13,7 +13,7 @@ import {
 import React from "react";
 
 import { AliyunClient, ParamsNullable } from "./aliyun-client";
-import { AccessKeyContext, RegionContext } from "./contexts";
+import { AccessKeyContext, Region, RegionContext } from "./contexts";
 import { useNavigate } from "react-router-dom";
 import { ArrowBack, Refresh } from "@mui/icons-material";
 import ConfirmDialog from "./ConfirmDialog";
@@ -37,7 +37,7 @@ function walkCapitalize(params: ParamsNullable) {
 
 async function createFromTemplate(
   accessKey: any,
-  region: any,
+  region: Region,
   templateId: string
 ) {
   if (!accessKey.accessKeyId || !accessKey.accessKeySecret) {
@@ -47,10 +47,10 @@ async function createFromTemplate(
   const client = new AliyunClient(
     accessKey.accessKeyId,
     accessKey.accessKeySecret,
-    `https://eci.${region}.aliyuncs.com`
+    "https://" + region.RegionEndpoint
   );
   const describeBody = await client.request("DescribeLaunchTemplates", {
-    RegionId: region,
+    RegionId: region.RegionId,
     LaunchTemplateId: [templateId],
     DetailFlag: true,
   });
@@ -78,7 +78,7 @@ async function createFromTemplate(
   delete params.ProductOnEciMode;
 
   const createBody = await client.request("CreateContainerGroup", {
-    RegionId: region,
+    RegionId: region.RegionId,
     ...params,
   });
 
@@ -102,10 +102,10 @@ function ListTemplates({ t }: { t: (key: string) => string }) {
     const client = new AliyunClient(
       accessKey.accessKeyId,
       accessKey.accessKeySecret,
-      `https://eci.${region}.aliyuncs.com`
+      "https://" + region!.RegionEndpoint
     );
     client
-      .request("DescribeLaunchTemplates", { RegionId: region })
+      .request("DescribeLaunchTemplates", { RegionId: region!.RegionId })
       .then((body) => setTemplates(body.LaunchTemplates))
       .finally(() => setLoading(false));
   }, [accessKey, region]);
@@ -154,7 +154,7 @@ function ListTemplates({ t }: { t: (key: string) => string }) {
                     if (!ok) return;
                     await createFromTemplate(
                       accessKey,
-                      region,
+                      region!,
                       template.LaunchTemplateId
                     );
                     navigate("/");
@@ -167,7 +167,7 @@ function ListTemplates({ t }: { t: (key: string) => string }) {
           ))
         ) : (
           <Box textAlign="center" color="text.secondary">
-            No launch templates
+            {t("No data")}
           </Box>
         )}
       </Stack>

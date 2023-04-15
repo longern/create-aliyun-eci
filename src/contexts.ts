@@ -12,9 +12,7 @@ export const AccessKeyContext = React.createContext({
 
 export type Region = {
   RegionId: string;
+  RegionEndpoint: string;
 };
 
-export const RegionContext = React.createContext("");
-export const RegionsDispatchContext = React.createContext<React.Dispatch<
-  React.SetStateAction<Region[]>
-> | null>(null);
+export const RegionContext = React.createContext<Region | null>(null);
