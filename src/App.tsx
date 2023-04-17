@@ -1,4 +1,4 @@
-import { Menu } from "@mui/icons-material";
+import { Logout, Menu, Restore } from "@mui/icons-material";
 import {
   AppBar,
   Box,
@@ -15,6 +15,8 @@ import {
   List,
   ListItem,
   ListItemButton,
+  ListItemIcon,
+  ListItemText,
   Radio,
   RadioGroup,
   Stack,
@@ -123,6 +125,40 @@ const RegionDialog = withTranslation()(function ({
   );
 });
 
+const DrawerList = withTranslation()(function ({
+  t,
+}: {
+  t: (key: string) => string;
+}) {
+  const navigate = useNavigate();
+
+  return (
+    <List>
+      <ListItem disablePadding>
+        <ListItemButton component={Link} to="/">
+          <ListItemText primary={t("Container Groups")} />
+        </ListItemButton>
+      </ListItem>
+      <ListItem disablePadding>
+        <ListItemButton component={Link} to="/templates">
+          <ListItemText primary={t("Launch Templates")} />
+        </ListItemButton>
+      </ListItem>
+      <Divider />
+      <ListItem disablePadding>
+        <ListItemButton
+          onClick={() => {
+            deleteAccessKeyFromStorage();
+            navigate("/login");
+          }}
+        >
+          <ListItemText primary={t("Logout")} />
+        </ListItemButton>
+      </ListItem>
+    </List>
+  );
+});
+
 function App() {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const accessKey = React.useMemo(getAccessKeyFromStorage, []);
@@ -161,38 +197,6 @@ function App() {
       })
       .catch(() => {});
   }, [accessKey]);
-
-  const DrawerList = withTranslation()(function ({
-    t,
-  }: {
-    t: (key: string) => string;
-  }) {
-    return (
-      <List>
-        <ListItem>
-          <ListItemButton component={Link} to="/">
-            {t("Container Groups")}
-          </ListItemButton>
-        </ListItem>
-        <ListItem>
-          <ListItemButton component={Link} to="/templates">
-            {t("Launch Templates")}
-          </ListItemButton>
-        </ListItem>
-        <Divider />
-        <ListItem>
-          <ListItemButton
-            onClick={() => {
-              deleteAccessKeyFromStorage();
-              navigate("/login");
-            }}
-          >
-            {t("Logout")}
-          </ListItemButton>
-        </ListItem>
-      </List>
-    );
-  });
 
   return (
     <div className="App">
