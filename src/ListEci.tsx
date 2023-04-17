@@ -137,11 +137,10 @@ function ListEci({ t }: { t: (key: string) => string }) {
                 <Card key={containerGroup.ContainerGroupId}>
                   <CardContent>
                     <Typography
-                      gutterBottom
                       variant="h2"
                       fontSize="1.5rem"
-                      overflow="hidden"
-                      textOverflow="ellipsis"
+                      gutterBottom
+                      noWrap
                     >
                       {containerGroup.ContainerGroupName}
                     </Typography>

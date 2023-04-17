@@ -1,4 +1,4 @@
-import { Logout, Menu, Restore } from "@mui/icons-material";
+import { Menu } from "@mui/icons-material";
 import {
   AppBar,
   Box,
@@ -15,7 +15,6 @@ import {
   List,
   ListItem,
   ListItemButton,
-  ListItemIcon,
   ListItemText,
   Radio,
   RadioGroup,

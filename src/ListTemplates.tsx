@@ -137,7 +137,7 @@ function ListTemplates({ t }: { t: (key: string) => string }) {
           templates.map((template) => (
             <Card key={template.LaunchTemplateId}>
               <CardContent>
-                <Typography variant="h2" fontSize="1.5rem">
+                <Typography variant="h2" fontSize="1.5rem" gutterBottom noWrap>
                   {template.LaunchTemplateName}
                 </Typography>
                 <Typography color="text.secondary">
