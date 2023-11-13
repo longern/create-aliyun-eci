@@ -1,5 +1,7 @@
 # Create Aliyun ECI
 
+由于ECI启动模板功能下线，本项目转为只读。
+
 Pure front-end implementation of Aliyun ECI creation tool, supporting creation of ECI instances from templates, as well as deletion, restart of ECI instances.
 
 纯前端实现的阿里云ECI创建工具，支持从模板创建ECI实例，以及删除、重启ECI实例。
